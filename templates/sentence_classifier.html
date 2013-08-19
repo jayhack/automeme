@@ -1,0 +1,605 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!--
+Design by Free CSS Templates
+http://www.freecsstemplates.org
+Released for free under a Creative Commons Attribution 2.5 License
+
+Name       : Macro Spikes 
+Description: A two-column, fixed-width design with dark color scheme.
+Version    : 1.0
+Released   : 20130326
+
+-->
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Automeme</title>
+<meta name="keywords" content="" />
+<meta name="description" content="" />
+<link href="http://fonts.googleapis.com/css?family=Dosis:300,400,500,600,700" rel="stylesheet" type="text/css" />
+<script src="http://api.jquery.com/resources/events.js"></script>
+<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+
+
+<style type="text/css">
+html, body {
+	height: 100%;
+}
+
+body {
+	margin: 0px;
+	padding: 0px;
+	background: #15384C;
+	font-family: 'Dosis', sans-serif;
+	font-size: 15px;
+	color: #545454;
+}
+
+h1, h2, h3 {
+	margin: 0;
+	padding: 0;
+	text-transform: uppercase;
+	font-weight: 500;
+}
+
+h2 {
+	padding: 0px 0px 20px 0px;
+	font-size: 1.50em;
+}
+
+p, ol, ul {
+	margin-top: 0px;
+}
+
+p {
+	line-height: 180%;
+}
+
+strong {
+	color: #2C2C2C;
+}
+
+a {
+	color: #2C2C2C;
+}
+
+a:hover {
+	text-decoration: none;
+}
+
+a img {
+	border: none;
+}
+
+img.border {
+}
+
+img.alignleft {
+	float: left;
+}
+
+img.alignright {
+	float: right;
+}
+
+img.aligncenter {
+	margin: 0px auto;
+}
+
+hr {
+	display: none;
+}
+
+/** WRAPPER */
+
+#wrapper {
+	overflow: hidden;
+	width: 1200px;
+	margin: 50px auto;
+	background: #FFFFFF;
+	box-shadow: 0px 0px 10px 5px rgba(0,0,0,.2);
+}
+
+.container {
+	width: 1200px;
+	margin: 0px auto;
+}
+
+.clearfix {
+	clear: both;
+}
+
+/** HEADER */
+
+#header {
+	overflow: hidden;
+	height: 150px;
+	background: #CF4A41;
+}
+
+/* Logo */
+
+#logo
+{
+	float: left;
+	width: 350px;
+	padding: 40px 0px 0px 50px;
+	text-transform: uppercase;
+}
+
+#logo h1
+{
+	padding: 5px 10px 0px 0px;
+}
+
+#logo h1 a
+{
+	text-decoration: none;
+	font-size: 1.9em;
+	font-weight: 300;
+	color: #FFFFFF;
+}
+#logo h3 a
+{
+	font-size:1.3em;
+	color:#FFFFFF;
+}
+
+#logo p
+{
+	display: block;
+	margin-top: -10px;
+	padding: 0px 0px 0px 0px;
+	letter-spacing: 1px;
+	font-size: 1.2em;
+	color: #FFFFFF;
+}
+
+#logo p a
+{
+	color: #FFFFFF;
+}
+
+/* Menu */
+
+#menu
+{
+	float: right;
+	width: 700px;
+	padding: 60px 50px 0px 0px;
+}
+
+#menu ul
+{
+	float: right;
+	margin: 0;
+	padding: 0px 0px 0px 0px;
+	list-style: none;
+	line-height: normal;
+}
+
+#menu li
+{
+	float: left;
+}
+
+#menu a
+{
+	display: block;
+	margin-left: 1px;
+	padding: 7px 0px 7px 30px;
+	letter-spacing: 1px;
+	text-decoration: none;
+	text-align: center;
+	text-transform: uppercase;
+	font-size: 14px;
+	font-weight: 300;
+	color: #FFFFFF;
+}
+
+#menu a:hover, #menu .current_page_item a
+{
+	text-decoration: none;
+	border-radius: 5px;
+	color: #FFFFFF;
+}
+
+/** PAGE */
+
+#page {
+	overflow: hidden;
+	width: 1100px;
+	margin: 0px 50px;
+	padding: 50px 0px;
+	border-bottom: 1px solid #DEDEDE;
+}
+
+#page h2 {
+}
+
+/** CONTENT */
+
+#content {
+	float: left;
+	width: 750px;
+}
+
+#content h2 {
+	font-size: 2.10em;
+}
+
+
+/** SIDEBAR */
+
+#sidebar {
+	float: right;
+	width: 300px;
+}
+
+/* Footer */
+
+#footer {
+	overflow: hidden;
+	margin: 0px 50px;
+	padding: 30px 0px;
+	border-top: 5px solid #000000;
+}
+
+#footer p {
+	text-align: center;
+}
+
+#footer a {
+	color: #545454;
+}
+
+/* Three Column */
+
+#three-column {
+	overflow: hidden;
+	margin: 0px 50px;
+	padding: 50px 0px;
+}
+
+#three-column #tbox1 {
+	float: left;
+	width: 300px;
+	margin-right: 50px;
+}
+
+#three-column #tbox2 {
+	float: left;
+	width: 400px;
+}
+
+#three-column #tbox3 {
+	float: right;
+	width: 300px;
+}
+
+/* List Style 1 */
+
+ul.style1 {
+	margin: 0px;
+	padding: 0px;
+	list-style: none;
+}
+
+ul.style1 li {
+	padding: 10px 0px 15px 0px;
+	border-top: 1px solid #DEDEDE;
+}
+
+ul.style1 a {
+	text-decoration: none;
+	color: #545454;
+}
+
+ul.style1 a:hover {
+	text-decoration: underline;
+}
+
+ul.style1 .first {
+	padding-top: 0px;
+	border-top: none;
+}
+
+
+/* List style 2 */
+
+ul.style2 {
+	margin: 0px;
+	padding: 0px;
+	list-style: none;
+}
+
+ul.style2 li {
+	padding: 25px 0px 15px 0px;
+	border-top: 1px solid #DEDEDE;
+}
+
+ul.style2 .first {
+	padding-top: 0px;
+	border-top: none;
+}
+
+ul.style2 h3 {
+	padding: 0px 0px 10px 0px;
+}
+
+ul.style2 h3 a {
+	text-transform: none;
+	color: #373737;
+}
+
+ul.style2 a {
+	text-decoration: none;
+	color: #919191;
+}
+
+ul.style2 a:hover {
+	text-decoration: underline;
+}
+
+/* Button Style 1 */
+
+.button-style {
+	display: inline-block;
+	margin-top: 20px;
+	padding: 7px 20px;
+	background: #CF4A41;
+	border-radius: 5px;
+	text-decoration: none;
+	text-transform: uppercase;
+	color: #FFFFFF;
+}
+
+img.meme {
+    width: 300px;
+}
+
+    
+
+</style>
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="default.css" rel="stylesheet" type="text/css" media="all" />
+<!--[if IE 6]>
+<link href="default_ie6.css" rel="stylesheet" type="text/css" />
+<![endif]-->
+</head>
+<body>
+<div id="wrapper">
+	<div id="header">
+		<div id="logo">
+			<h1><b><a href="#">Automeme</a></b></h1>
+			<h3 color="white"><a href="mailto:jhack@stanford.edu?cc=skbeder@gmail.com">Jay Hack and Sam Beder</a><h3>
+		</div>
+	</div>
+	<div id="page">
+		<div id="content">
+			<h1 style="font-size:50px;"><b>enter text here <b></h1>
+			<h3><b>(space to classify)</b></h3>
+            
+            
+{% extends "layout.html" %}
+{% block body %}
+<script type="text/javascript">
+
+var indexed_urls = new Array ();
+var meme_image_names = new Array ();
+meme_image_names[0] = "result0_image";
+meme_image_names[1] = "result1_image";
+meme_image_names[2] = "result2_image";
+meme_image_names[3] = "result3_image";
+  
+
+/* Function: KeyJustPressed
+ * ------------------------
+ * whenever the user presses a key in one of the textareas, and if it is a space, this function
+ * will get an ordered ranking of the top 4 meme types that match it from the python flask app and
+ * update the images' src accordingly.
+ */
+function KeyJustPressed (event) { 
+    
+    if (event.keyCode == 32) {
+
+    	send_location = $SCRIPT_ROOT + '/_classify_meme';
+    	send_data = { 
+    					top_text: $('textarea[name="top_text"]').val(), 
+    					bottom_text: $('textarea[name="bottom_text"]').val()
+    	}
+
+        $.getJSON(	send_location, 
+        			send_data, 
+        			function(data) {
+
+            var result = jQuery.parseJSON (data.result)
+            
+            indexed_urls[0] = result[0][1]
+            indexed_urls[1] = result[1][1]
+            indexed_urls[2] = result[2][1]
+            
+
+            /*### Step 1: update image src attributes ###*/
+            $('#result0_image').attr("src", result[0][1]);
+            $('#result1_image').attr("src", result[1][1]);
+            $('#result2_image').attr("src", result[2][1]);
+            $('#result3_image').attr("src", result[3][1]);
+
+            /*### Step 2: update image name attributes ###*/
+            $('#result0_image').attr("name", result[0][0]);
+            $('#result1_image').attr("name", result[1][0]);
+            $('#result2_image').attr("name", result[2][0]);
+            $('#result3_image').attr("name", result[3][0]);
+        
+        });
+    }
+    
+}
+
+
+
+/* Function: ImageJustClicked
+ * --------------------------
+ * this function gets called when the user clicks an image;
+ * it will have the flask app generate a meme according to the current text and redirect you there.
+ */
+function ImageJustClicked (event, clicked_index) { 
+
+
+	var meme_image_id = meme_image_names[clicked_index];
+	var	meme_name = document.getElementById(meme_image_id).getAttribute("name");
+
+
+
+	send_location = $SCRIPT_ROOT + '/_generate_meme';
+	send_data = { 
+					top_text: $('textarea[name="top_text"]').val(), 
+					bottom_text: $('textarea[name="bottom_text"]').val(), 
+					meme_name: meme_name};
+
+
+    $.getJSON(	send_location, 
+    			send_data, 
+    			function(data) {
+        
+        var result = jQuery.parseJSON (data.result)
+        window.location = result;
+
+    });
+}
+
+$("#textarea")
+  .focus(function() {
+        if (this.value === this.defaultValue) {
+            this.value = '';
+        }
+  })
+  .blur(function() {
+        if (this.value === '') {
+            this.value = this.defaultValue;
+        }
+});
+    
+
+    
+</script>
+
+<p>
+  	<textarea onFocus="this.value=''" value="enter a sentence..." defaultvalue="top text" style="font-size:60px; margin-top:50px;" rows="2" cols="15"  name="top_text" onkeypress="return KeyJustPressed(event)">top text...</textarea>
+ 
+    <table style="margin-left:0px; margin-top:-100px">
+        
+        <tr>
+            <td rowspan="3" style="width:800px">
+            
+                <img 
+                	id="result0_image" 
+                	name="Success Kid"
+
+                	onclick="return ImageJustClicked(event, 0)"
+                	onmouseover="this.style.opacity=0.4;this.filters.alpha.opacity=40;"
+                	onmouseout="this.style.opacity=1;this.filters.alpha.opacity=100;"
+                	onmouseup="this.style.opacity=0.2;this.filters.alpha.opacity=20"
+
+                	style="width:580px;margin-top:100px;float:top;" 
+                	src="http://rlv.zcache.com/awesome_smiley_face_rage_f7u12_funny_meme_stickers-r35ccef514463441b9ace70325551f930_v9waf_8byvr_512.jpg"
+                >
+                
+            </td>
+            
+        
+            <td>
+            	<img 
+            		class="meme" 
+            		id="result1_image" 
+            		name="Success Kid"
+
+            		onclick="return ImageJustClicked(event, 1)" 
+                	onmouseover="this.style.opacity=0.4;this.filters.alpha.opacity=40;"
+                	onmouseout="this.style.opacity=1;this.filters.alpha.opacity=100;"
+                	onmouseup="this.style.opacity=0.2;this.filters.alpha.opacity=20"
+
+            		style="margin-left:150px; margin-top:-85px;" 
+            		src="http://www.g2capitaladvisors.com/wp-content/uploads/2012/05/white_square-917x9751.jpg"
+            	>
+            </td>
+            <td>
+            	<span id="result1_name"></span>
+            </td>
+		</tr>
+        
+        
+        <tr>
+        	<td>
+        		<img 
+        			class="meme" 
+        			id="result2_image" 
+        			name="Success Kid"
+
+        			onclick="return ImageJustClicked(event, 2)" 
+                	onmouseover="this.style.opacity=0.4;this.filters.alpha.opacity=40;"
+                	onmouseout="this.style.opacity=1;this.filters.alpha.opacity=100;"
+                	onmouseup="this.style.opacity=0.2;this.filters.alpha.opacity=20"
+
+        			style="margin-left:150px" 
+        			src="http://www.g2capitaladvisors.com/wp-content/uploads/2012/05/white_square-917x9751.jpg"
+        		>
+        	</td>
+        	<td>
+        		<span id="result2_name"></span>
+        	</td>
+        </tr>
+        
+        
+        <tr>
+        	<td>
+        		<img 
+        			class="meme" 
+        			id="result3_image" 
+        			name="Success Kid"
+
+        			onclick="return ImageJustClicked(event, 3)" 
+                	onmouseover="this.style.opacity=0.4;this.filters.alpha.opacity=40;"
+                	onmouseout="this.style.opacity=1;this.filters.alpha.opacity=100;"
+                	onmouseup="this.style.opacity=0.2;this.filters.alpha.opacity=20"
+
+        			style="margin-left:150px" 
+        			src="http://www.g2capitaladvisors.com/wp-content/uploads/2012/05/white_square-917x9751.jpg"
+        		>
+        	</td>
+        	<td>
+        		<span id="result3_name"></span>
+        	</td>
+        </tr>
+        
+        
+    </table>
+<p>
+<a href="#" id="calculate"></a>
+{% endblock %}
+      
+            
+		</div>
+
+	</div>
+	<div id="three-column">
+		
+	</div>
+	<div id="footer">
+		<h2>Jay Hack and Sam Beder</h2>
+	</div>
+</div>
+</body>
+</html>

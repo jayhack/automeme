@@ -1,0 +1,12 @@
+Flask==0.10.1
+Jinja2==2.7
+MarkupSafe==0.18
+Werkzeug==0.9.1
+distribute==0.6.34
+gunicorn==0.17.4
+itsdangerous==0.21
+wsgiref==0.1.2
+numpy
+
+http://pyyaml.org/download/pyyaml/PyYAML-3.10.tar.gz
+http://pypi.python.org/packages/source/n/nltk/nltk-2.0.1rc4.zip

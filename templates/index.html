@@ -1,0 +1,52 @@
+{% extends "layout.html" %}
+{% block body %}
+<script type=text/javascript>
+  $(function() {
+    var submit_form = function(e) {
+      $.getJSON($SCRIPT_ROOT + '/_classify_sentiment', {
+        a: $('input[name="a"]').val()
+      }, function(data) {
+        
+        var result = jQuery.parseJSON (data.result)
+        
+        $('#result1_image').attr("src", result[0][1]);
+        $('#result2_image').attr("src", result[1][1]);
+        $('#result3_image').attr("src", result[2][1]);
+        $('#result4_image').attr("src", result[3][1]);
+        
+        $('#result1_name').text(result[0][0]);
+        $('#result2_name').text(result[1][0]);
+        $('#result3_name').text(result[2][0]);
+        $('#result4_name').text(result[3][0]);
+        $('input[name=a]').focus().select();
+      });
+      return false;
+    };
+
+    $('a#calculate').bind('click', submit_form);
+
+    $('input[type=text]').bind('keydown', function(e) {
+      if (e.keyCode == 13) {
+        submit_form(e);
+      }
+    });
+
+    $('input[name=a]').focus();
+  });
+</script>
+<style type="text/css">
+img.meme {
+    width: 10;
+}
+</style>
+<h1 align=center>DATASS</h1>
+<p>
+  <input type=text size=40 name=a>
+    <table>
+        <tr><td><img class=meme id=result1_image src="http://4.bp.blogspot.com/-IHmZeGAA2pw/Tw9HHzmr2RI/AAAAAAAAB6I/wcW9a5I8Wk0/s1600/troll%2Bface.jpg"></td><td><span id=result1_name></span></td></tr>
+        <tr><td><img class=meme id=result2_image src="http://4.bp.blogspot.com/-IHmZeGAA2pw/Tw9HHzmr2RI/AAAAAAAAB6I/wcW9a5I8Wk0/s1600/troll%2Bface.jpg"></td><td><span id=result2_name></span></td></tr>
+        <tr><td><img class=meme id=result3_image src="http://4.bp.blogspot.com/-IHmZeGAA2pw/Tw9HHzmr2RI/AAAAAAAAB6I/wcW9a5I8Wk0/s1600/troll%2Bface.jpg"></td><td><span id=result3_name></span></td></tr>
+        <tr><td><img class=meme id=result4_image src="http://4.bp.blogspot.com/-IHmZeGAA2pw/Tw9HHzmr2RI/AAAAAAAAB6I/wcW9a5I8Wk0/s1600/troll%2Bface.jpg"></td><td><span id=result4_name></span></td></tr>
+    </table>
+<p><a href=# id=calculate>calculate server side</a>
+{% endblock %}

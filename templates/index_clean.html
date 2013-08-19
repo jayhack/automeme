@@ -1,0 +1,507 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!--
+Design by Free CSS Templates
+http://www.freecsstemplates.org
+Released for free under a Creative Commons Attribution 2.5 License
+
+Name       : Macro Spikes 
+Description: A two-column, fixed-width design with dark color scheme.
+Version    : 1.0
+Released   : 20130326
+
+-->
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>D.A.T.A.S.S.</title>
+<meta name="keywords" content="" />
+<meta name="description" content="" />
+<link href="http://fonts.googleapis.com/css?family=Dosis:300,400,500,600,700" rel="stylesheet" type="text/css" />
+<script src="http://api.jquery.com/resources/events.js"></script>
+<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+
+
+<style type="text/css">
+html, body {
+	height: 100%;
+}
+
+body {
+	margin: 0px;
+	padding: 0px;
+	background: #15384C;
+	font-family: 'Dosis', sans-serif;
+	font-size: 15px;
+	color: #545454;
+}
+
+h1, h2, h3 {
+	margin: 0;
+	padding: 0;
+	text-transform: uppercase;
+	font-weight: 500;
+}
+
+h2 {
+	padding: 0px 0px 20px 0px;
+	font-size: 1.50em;
+}
+
+p, ol, ul {
+	margin-top: 0px;
+}
+
+p {
+	line-height: 180%;
+}
+
+strong {
+	color: #2C2C2C;
+}
+
+a {
+	color: #2C2C2C;
+}
+
+a:hover {
+	text-decoration: none;
+}
+
+a img {
+	border: none;
+}
+
+img.border {
+}
+
+img.alignleft {
+	float: left;
+}
+
+img.alignright {
+	float: right;
+}
+
+img.aligncenter {
+	margin: 0px auto;
+}
+
+hr {
+	display: none;
+}
+
+/** WRAPPER */
+
+#wrapper {
+	overflow: hidden;
+	width: 1200px;
+	margin: 50px auto;
+	background: #FFFFFF;
+	box-shadow: 0px 0px 10px 5px rgba(0,0,0,.2);
+}
+
+.container {
+	width: 1200px;
+	margin: 0px auto;
+}
+
+.clearfix {
+	clear: both;
+}
+
+/** HEADER */
+
+#header {
+	overflow: hidden;
+	height: 150px;
+	background: #CF4A41;
+}
+
+/* Logo */
+
+#logo
+{
+	float: left;
+	width: 350px;
+	padding: 40px 0px 0px 50px;
+	text-transform: uppercase;
+}
+
+#logo h1
+{
+	padding: 5px 10px 0px 0px;
+}
+
+#logo h1 a
+{
+	text-decoration: none;
+	font-size: 1.5em;
+	font-weight: 300;
+	color: #FFFFFF;
+}
+
+#logo p
+{
+	display: block;
+	margin-top: -10px;
+	padding: 0px 0px 0px 0px;
+	letter-spacing: 1px;
+	font-size: 1.2em;
+	color: #FFFFFF;
+}
+
+#logo p a
+{
+	color: #FFFFFF;
+}
+
+/* Menu */
+
+#menu
+{
+	float: right;
+	width: 700px;
+	padding: 60px 50px 0px 0px;
+}
+
+#menu ul
+{
+	float: right;
+	margin: 0;
+	padding: 0px 0px 0px 0px;
+	list-style: none;
+	line-height: normal;
+}
+
+#menu li
+{
+	float: left;
+}
+
+#menu a
+{
+	display: block;
+	margin-left: 1px;
+	padding: 7px 0px 7px 30px;
+	letter-spacing: 1px;
+	text-decoration: none;
+	text-align: center;
+	text-transform: uppercase;
+	font-size: 14px;
+	font-weight: 300;
+	color: #FFFFFF;
+}
+
+#menu a:hover, #menu .current_page_item a
+{
+	text-decoration: none;
+	border-radius: 5px;
+	color: #FFFFFF;
+}
+
+/** PAGE */
+
+#page {
+	overflow: hidden;
+	width: 1100px;
+	margin: 0px 50px;
+	padding: 50px 0px;
+	border-bottom: 1px solid #DEDEDE;
+}
+
+#page h2 {
+}
+
+/** CONTENT */
+
+#content {
+	float: left;
+	width: 750px;
+}
+
+#content h2 {
+	font-size: 2.10em;
+}
+
+
+/** SIDEBAR */
+
+#sidebar {
+	float: right;
+	width: 300px;
+}
+
+/* Footer */
+
+#footer {
+	overflow: hidden;
+	margin: 0px 50px;
+	padding: 30px 0px;
+	border-top: 5px solid #000000;
+}
+
+#footer p {
+	text-align: center;
+}
+
+#footer a {
+	color: #545454;
+}
+
+/* Three Column */
+
+#three-column {
+	overflow: hidden;
+	margin: 0px 50px;
+	padding: 50px 0px;
+}
+
+#three-column #tbox1 {
+	float: left;
+	width: 300px;
+	margin-right: 50px;
+}
+
+#three-column #tbox2 {
+	float: left;
+	width: 400px;
+}
+
+#three-column #tbox3 {
+	float: right;
+	width: 300px;
+}
+
+/* List Style 1 */
+
+ul.style1 {
+	margin: 0px;
+	padding: 0px;
+	list-style: none;
+}
+
+ul.style1 li {
+	padding: 10px 0px 15px 0px;
+	border-top: 1px solid #DEDEDE;
+}
+
+ul.style1 a {
+	text-decoration: none;
+	color: #545454;
+}
+
+ul.style1 a:hover {
+	text-decoration: underline;
+}
+
+ul.style1 .first {
+	padding-top: 0px;
+	border-top: none;
+}
+
+
+/* List style 2 */
+
+ul.style2 {
+	margin: 0px;
+	padding: 0px;
+	list-style: none;
+}
+
+ul.style2 li {
+	padding: 25px 0px 15px 0px;
+	border-top: 1px solid #DEDEDE;
+}
+
+ul.style2 .first {
+	padding-top: 0px;
+	border-top: none;
+}
+
+ul.style2 h3 {
+	padding: 0px 0px 10px 0px;
+}
+
+ul.style2 h3 a {
+	text-transform: none;
+	color: #373737;
+}
+
+ul.style2 a {
+	text-decoration: none;
+	color: #919191;
+}
+
+ul.style2 a:hover {
+	text-decoration: underline;
+}
+
+/* Button Style 1 */
+
+.button-style {
+	display: inline-block;
+	margin-top: 20px;
+	padding: 7px 20px;
+	background: #CF4A41;
+	border-radius: 5px;
+	text-decoration: none;
+	text-transform: uppercase;
+	color: #FFFFFF;
+}
+
+img.meme {
+    width: 300px;
+}
+
+    
+
+</style>
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="default.css" rel="stylesheet" type="text/css" media="all" />
+<!--[if IE 6]>
+<link href="default_ie6.css" rel="stylesheet" type="text/css" />
+<![endif]-->
+</head>
+<body>
+<div id="wrapper">
+	<div id="header">
+		<div id="logo">
+			<h1><b><a href="#">D.A.T.A.S.S.</a><b></h1>
+		</div>
+	</div>
+	<div id="page">
+		<div id="content">
+			<h1 style="font-size:50px;"><b>enter text here<b></h1>
+            
+            
+{% extends "layout.html" %}
+{% block body %}
+
+<script type="text/javascript">
+
+var indexed_urls = new Array ()
+
+$("#a").keypress(function(event) {
+  if ( event.which == 13 ) {
+     event.preventDefault();
+   }
+   xTriggered++;
+   var msg = "Handler for .keypress() called " + xTriggered + " time(s).";
+  $.print( msg, "html" );
+  $.print( event );
+  alert ("shit just went down")
+});
+
+  $(function() {
+    var submit_form = function(e) {
+      $.getJSON($SCRIPT_ROOT + '/_classify_sentiment', {
+        a: $('textarea[name="a"]').val()
+      }, function(data) {
+        
+        var result = jQuery.parseJSON (data.result)
+        
+        indexed_urls[0] = result[0][1]
+        indexed_urls[1] = result[1][1]
+        indexed_urls[2] = result[2][1]
+        
+        $('#result1_image').attr("src", result[0][1]);
+        $('#result2_image').attr("src", result[1][1]);
+        $('#result3_image').attr("src", result[2][1]);
+        
+        $('#result1_name').text(result[0][0]);
+        $('#result2_name').text(result[1][0]);
+        $('#result3_name').text(result[2][0]);
+        $('input[name=a]').focus().select();
+      });
+      return false;
+    };
+    
+
+    $('a#calculate').bind('click', submit_form);
+
+    $('input[type=text]').bind('keydown', function(e) {
+      if (e.keyCode == 13) {
+        submit_form(e);
+      }
+    });
+
+    $('input[name=a]').focus();
+  });
+  
+function KeyJustPressed (event) { 
+    
+    if (event.keyCode == 32) {
+        $.getJSON($SCRIPT_ROOT + '/_classify_sentiment', { a: $('textarea[name="a"]').val()}, function(data) {
+            var result = jQuery.parseJSON (data.result)
+            
+            indexed_urls[0] = result[0][1]
+            indexed_urls[1] = result[1][1]
+            indexed_urls[2] = result[2][1]
+            
+            $('#result0_image').attr("src", result[0][1]);
+            $('#result1_image').attr("src", result[1][1]);
+            $('#result2_image').attr("src", result[2][1]);
+            $('#result3_image').attr("src", result[3][1]);
+        
+            $('#result0_name').attr("src", result[0][0]);
+            $('#result1_name').text(result[1][0]);
+            $('#result2_name').text(result[2][0]);
+            $('#result3_name').text(result[3][0]);
+        });
+    }
+    
+}
+    
+</script>
+
+<p>
+  <textarea style="font-size:60px; margin-top:50px;" rows="2" cols="15"  name="a" onkeypress="return KeyJustPressed(event)"></textarea>
+    <table style="margin-left:0px; margin-top:-100px">
+        
+    
+        <tr>
+            <td rowspan="3" style="width:800px">
+            
+                <img id="result0_image" style="width:580px;margin-top:100px;float:top;" src="http://upload.wikimedia.org/wikipedia/en/thumb/b/b7/Stanford_University_seal_2003.svg/210px-Stanford_University_seal_2003.svg.png">
+                
+            </td>
+            
+        
+            <td><img class="meme" id="result1_image" onmouseover="return MemeRollover(0)" style="margin-left:150px; margin-top:-85px;" src="https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcT36z4Juvzwusujo0oeRrSZkhEC9Y-BDwXXsT_Lk8bd-r0x7IfAcA"></td><td><span id=result1_name></span></td>
+            </tr>
+        
+        
+        <tr><td><img class="meme" id="result2_image" onmouseover="return MemeRollover(1)" style="margin-left:150px" src="http://upload.wikimedia.org/wikipedia/en/thumb/b/b7/Stanford_University_seal_2003.svg/210px-Stanford_University_seal_2003.svg.png"></td><td><span id=result2_name></span></td></tr>
+        
+        
+        <tr><td><img class=meme id=result3_image onmouseover="return MemeRollover(2)" style="margin-left:150px" src="https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcT36z4Juvzwusujo0oeRrSZkhEC9Y-BDwXXsT_Lk8bd-r0x7IfAcA"></td><td><span id=result3_name></span></td></tr>
+        
+        
+    </table>
+<p><a href="#" id="calculate"></a>
+{% endblock %}
+      
+            
+		</div>
+
+	</div>
+	<div id="three-column">
+		
+	</div>
+	<div id="footer">
+		<p>Copyright (c) 2013 Sitename.com. All rights reserved. Design by <a href="http://www.freecsstemplates.org">FCT</a>. Photos by <a href="http://fotogrph.com/">Fotogrph</a>.</p>
+	</div>
+</div>
+</body>
+</html>
