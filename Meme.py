@@ -54,13 +54,10 @@ class Meme:
 
 		### Step 2: get tokenized versions ###
 		self.tokenize ();
-		### Step 3: get feature representations ###
 
-		self.get_sentiment_features ();
-		self.get_tfidf_features ();
 
-		### Step 4: (optional) print out a profile of this meme ###
-		self.print_profile ()
+
+
 
 
 	# Function: tokenize
@@ -68,8 +65,6 @@ class Meme:
 	# self.(top|bottom)_text_raw -> self.(top|bottom|all)_text
 	def tokenize (self):
 
-		print self.top_text_raw
-		print self.bottom_text_raw
 		top_sentences = word_tokenize (self.top_text_raw)
 		bottom_sentences = word_tokenize (self.bottom_text_raw)
 
@@ -88,6 +83,8 @@ class Meme:
 
 		self.all_text = self.top_text + self.bottom_text
 
+
+
 	# Function: get_ngram_features 
 	# ----------------------------
 	# fills in ngram_features with a dict of stemmed_word:True pairs. 
@@ -102,18 +99,6 @@ class Meme:
 		self.ngram_features = dict(top_features + bottom_features + all_features);
 
 
-	# Function: get_sentiment_features
-	# --------------------------------
-	# ---- CURRENTLY UNIMPLEMENTED ---
-	def get_sentiment_features (self):
-		pass
-
-	# Function: get_tfidf_features
-	# --------------------------------
-	# ---- CURRENTLY UNIMPLEMENTED ---
-	def get_tfidf_features (self):
-		pass
-
 
 	# Function: get_features
 	# ----------------------
@@ -121,18 +106,17 @@ class Meme:
 	# since we are training maxent, it will be a dict of word:True pairs
 	def get_features (self):
 
-		get_ngram_features ();
-		return self.ngram_features ()
+		self.get_ngram_features ()
+		return self.ngram_features
 
 
+	# Function: string representation
+	# -------------------------------
+	# a string representation of the meme 
+	def __str__ (self):
 
-	# Function: print_profile 
-	# -----------------------
-	# function to print out a profile of the current meme.
-	def print_profile (self):
-		print "---------- Meme Type: ", self.meme_type, "----------"
-		print "TOP: " + self.top_text_raw
-		print "BOTTOM: " + self.bottom_text_raw
+		return self.meme_type + ": " + self.top_text_raw + " / " + self.bottom_text_raw
+
 
 
 

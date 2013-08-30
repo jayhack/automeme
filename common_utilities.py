@@ -26,7 +26,6 @@ def print_message (message):
 	print "-" * len(message)
 	print message
 	print "-" * len(message)
-	print "\n"
 
 # Function: print_error
 # ---------------------
@@ -51,7 +50,7 @@ def print_status (stage, status):
 # prints out a status message for inner programs
 def print_inner_status (stage, status):
 	
-	print "-----> " + stage + ": " + status
+	print "	-----> " + stage + ": " + status
 
 
 
