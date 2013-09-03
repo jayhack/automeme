@@ -19,14 +19,16 @@ import pickle
 
 class Meme:
 
-	#####[ --- Data --- ] #####
-	parent = None
+	##########################################################################################
+	##############################[ --- Instance Variables --- ]##############################
+	##########################################################################################
+
+	#--- meme_type ---
 	meme_type = None
 
 	#--- raw text ---
 	top_text_raw = None
 	bottom_text_raw = None
-	all_text_raw = None
 
 	#--- tokenized text ---
 	top_text = None
@@ -40,23 +42,25 @@ class Meme:
 
 
 
+
+
+
+	##########################################################################################
+	##############################[ --- Constructor/Initialization --- ]######################
+	##########################################################################################
+
 	# Function: Constructor
 	# ---------------------
 	# given the raw top/bottom text, this will fill in all the data.
-	def __init__(self, parent, meme_type, top_text_raw, bottom_text_raw):
+	def __init__(self, meme_type, top_text_raw, bottom_text_raw):
 
 		### Step 1: fill in basic data ###
-		self.parent = parent
 		self.meme_type = meme_type
 		self.top_text_raw = top_text_raw
 		self.bottom_text_raw = bottom_text_raw
-		self.all_text_raw = self.top_text_raw + " | " + self.bottom_text_raw
 
 		### Step 2: get tokenized versions ###
 		self.tokenize ();
-
-
-
 
 
 
@@ -85,6 +89,13 @@ class Meme:
 
 
 
+
+
+
+	##########################################################################################
+	##############################[ --- Feature Representations --- ]#########################
+	##########################################################################################
+
 	# Function: get_ngram_features 
 	# ----------------------------
 	# fills in ngram_features with a dict of stemmed_word:True pairs. 
@@ -109,6 +120,14 @@ class Meme:
 		self.get_ngram_features ()
 		return self.ngram_features
 
+
+
+
+
+
+	##########################################################################################
+	##############################[ --- String Representations --- ]##########################
+	##########################################################################################
 
 	# Function: string representation
 	# -------------------------------
