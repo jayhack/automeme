@@ -88,12 +88,12 @@ class Automeme:
         self.save_classifier ('unigram_classifier.pkl')
 
         #--- Evaluation ---
-        # self.classifier.show_most_informative_features (500)
-        # print "### total accuracy: ###"
-        # print classify.accuracy (self.classifier, self.testing_examples)
-        # MRR = self.evaluate_classifier_MRR ()
-        # print "### MRR: ###"
-        # print MRR
+        self.classifier.show_most_informative_features (1000)
+        print "### total accuracy: ###"
+        print classify.accuracy (self.classifier, self.testing_examples)
+        MRR = self.evaluate_classifier_MRR ()
+        print "### MRR: ###"
+        print MRR
 
         return
 
