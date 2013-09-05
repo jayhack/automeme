@@ -73,18 +73,19 @@ class Automeme:
     def __init__ (self):
        
         print_status ("Initialization", "Loading memes")
-        self.load_memes_raw (self.raw_data_directory)
-        self.save_meme_examples_pickle ()
+        # self.load_memes_raw (self.raw_data_directory)
+        self.load_meme_examples_pickle ()
+        # self.save_meme_examples_pickle ()
 
         print_status ("Initialization", "Getting feature represenations")
-        # self.get_training_examples ()
+        self.get_training_examples ()
 
         print_status ("Initialization", "Training classifier")
-        # self.train_classifier ()
-        self.load_classifier ('unigram_classifier.obj')
+        self.train_classifier ()
+        # self.load_classifier ('unigram_classifier.obj')
 
-        # print_status ("Initialization", "Saving classifier")
-        # self.save_classifier ("unigram_classifier.obj")
+        print_status ("Initialization", "Saving classifier")
+        self.save_classifier ('unigram_classifier.pkl')
 
         #--- Evaluation ---
         # self.classifier.show_most_informative_features (500)
@@ -128,11 +129,9 @@ class Automeme:
 
 
 
-
-
-
-
-
+    # Function: load_meme_examples_pickle
+    # -----------------------------------
+    # loads meme examples from pickled files in the saved_data_directory
     def load_meme_examples_pickle (self):
 
         meme_examples_filename  = os.path.join (self.saved_data_directory, 'meme_examples.obj')
@@ -140,6 +139,11 @@ class Automeme:
         self.meme_examples      = pickle.load (open(meme_examples_filename, 'r'))
         self.meme_types         = pickle.load (open(meme_types_filename, 'r'))
 
+
+
+    # Function: save_meme_examples_pickle
+    # -----------------------------------
+    # pickles self.meme_examples in the saved_data_directory
     def save_meme_examples_pickle (self) :
 
         meme_examples_filename  = os.path.join (self.saved_data_directory, 'meme_examples.obj')
@@ -147,6 +151,7 @@ class Automeme:
 
         pickle.dump (self.meme_examples, open(meme_examples_filename, 'w'))
         pickle.dump (self.meme_types, open(meme_types_filename, 'w'))
+
 
 
     # Function: print_meme_examples_stats
@@ -161,9 +166,13 @@ class Automeme:
 
 
 
+
+
+
     ########################################################################################################################
     ###############################[ --- Training/Loading/Saving the Classifier --- ]#######################################
     ########################################################################################################################
+
     # Function: get_training_data
     # ---------------------------
     # fills self.all_examples, self.training_examples and self.testing_examples with 
@@ -179,10 +188,12 @@ class Automeme:
         shuffle(self.all_examples)
 
         ### Step 3: divide it up for classification ###
-        train_portion = 1.0
+        train_portion = 0.8
         num_training_examples = int(train_portion*len(self.all_examples))
         self.training_examples = self.all_examples [:num_training_examples]
         self.testing_examples = self.all_examples[num_training_examples:]
+
+
 
     # Function: train_classifier
     # --------------------------
@@ -193,14 +204,20 @@ class Automeme:
         self.classifier = classify.MaxentClassifier.train (self.training_examples, algorithm, trace=100, max_iter=3)
 
 
+
     # Function: (load|save)_classifier
     # --------------------------------
-    # (un)pickle the trained classifier into (out of) a file
+    # pickle the trained classifier into a file
     def save_classifier (self, filename):
 
-        full_filename = os.path.join (classifiers_directory, filename)
+        full_filename = os.path.join (self.classifiers_directory, filename)
         pickle.dump (self.classifier, open(full_filename, 'w'))
 
+
+
+    # Function: load_classifier
+    # -------------------------
+    # unpickle the trained classifier out of a file
     def load_classifier (self, filename):
         
         full_filename   = os.path.join (classifiers_directory, filename)
@@ -211,6 +228,7 @@ class Automeme:
     ########################################################################################################################
     ###############################[ --- Classification --- ]###############################################################
     ########################################################################################################################
+    
     # Function: classify_features
     # ---------------------------
     # given a feature vector, this function will return a sorted probability distribution 
