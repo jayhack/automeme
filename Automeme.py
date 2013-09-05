@@ -12,7 +12,7 @@
 #--- Standard ---
 import os
 import sys
-import csv
+import json
 import pickle
 from collections import defaultdict
 from random import shuffle
@@ -24,7 +24,6 @@ import math
 from nltk.tokenize import word_tokenize, wordpunct_tokenize, sent_tokenize
 from nltk import ngrams
 from nltk import classify
-from nltk import PorterStemmer 
 
 #--- My files ---
 from Meme import Meme 
@@ -32,9 +31,6 @@ from common_utilities import print_message, print_status, print_inner_status, pr
 
 
 #--- Globals ---
-data_directory          = os.path.join (os.getcwd(), 'data')
-saved_data_directory    = os.path.join (os.getcwd(), 'saved_data')
-classifiers_directory   = os.path.join (os.getcwd(), 'classifiers')
 
 
 
@@ -45,8 +41,13 @@ classifiers_directory   = os.path.join (os.getcwd(), 'classifiers')
 # the main class for this program, will classify memes or sentences.
 class Automeme:
     
+    #---------------------[ Filenames ]------------------------------
+    raw_data_directory      = os.path.join  (os.getcwd(), 'data_diylol')
+    classifiers_directory   = os.path.join  (os.getcwd(), 'classifiers')
+    saved_data_directory    = os.path.join  (os.getcwd(), 'saved_data')
+
     #---------------------[ Meme Examples ]--------------------------
-    meme_examples       = []      # list of Meme objects representing all the examples we have access to
+    meme_examples       = []    # list of Meme objects representing all the examples we have access to
     meme_types          = {}    # defaultdict mapping meme_type (strings) to the count of examples we have of them
 
     #---------------------[ Training Data ]--------------------------
@@ -62,17 +63,6 @@ class Automeme:
 
 
 
-    #---------------------[ TF-IDF RELATED MECHANISMS ]---------------------
-    stemmer = PorterStemmer ()
-    vocab = set ()              # vocab[meme_type][c_name] = {set of all words that occur in meme_type under c_name}
-    word_frequencies = {}       # word_frequencies[meme_type][c_name][word] = # of times word occurs in meme_type under c_name
-    tfidf = {}                  # tfidf[meme_type][c_name][word] = tfidf of word in meme_type under c_name
-
-    #---------------------[ NGRAMS CLASSIFIER ]---------------------
-    ngrams_classifier = {}                      # classifier[c_name] = classifier for the c_name portion of memes
-
-
-
     ########################################################################################################################
     #########################[--- Constructor/Initialization ---]###########################################################
     ########################################################################################################################
@@ -83,7 +73,8 @@ class Automeme:
     def __init__ (self):
        
         print_status ("Initialization", "Loading memes")
-        # self.load_meme_examples_pickle ()
+        self.load_memes_raw (self.raw_data_directory)
+        self.save_meme_examples_pickle ()
 
         print_status ("Initialization", "Getting feature represenations")
         # self.get_training_examples ()
@@ -103,81 +94,6 @@ class Automeme:
         # print "### MRR: ###"
         # print MRR
 
-
-
-
-
-
-        # if mode == 'dev_mode':
-        #     print_status ("Initialization", "Entering dev mode")
-        #     self.save = save
-
-        #     print_status ("Initialization", "Loading meme examples")
-        #     self.load_meme_examples(filenames['meme_examples'])
-
-        #     print_status ("Initialization", "Getting meme types")
-
-
-
-        #     ### get labelled data from our list of memes and partition it for training ###
-        #     print "TRAINING DATA:"
-        #     self.get_ngrams_labeled_data ()
-        #     self.partition_ngrams_labeled_data(0.85)
-        #     print "     # of train examples = ", len(self.ngrams_train_data)
-        #     print "     # of test examples = ", len(self.ngrams_test_data)
-
-
-
-
-        #     ### get the classifier itself, via training or loading ###
-        #     if filename['ngrams_classifier']:
-        #         print "LOAD CLASSIFIER: (filename = " + filename + ")"
-        #         f = open(filename, 'r')
-        #         self.ngrams_classifier = pickle.load(f)
-        #         f.close ()
-        #     else:
-        #         print "TRAIN CLASSIFIER:"
-        #         self.train_ngrams_classifier (self.ngrams_train_data);
-
-
-        #     print "EVALUATE CLASSIFIER:"
-        #     self.evaluate_ngrams_classifier (self.ngrams_test_data);
-
-
-
-
-
-        # # Mode: use_mode
-        # # --------------
-        # # loads the classifier and meme types; super quick, for real usage.
-        # elif mode == 'use_mode':
-
-        #     print "LOAD: memes types"
-        #     self.load_meme_types (filenames['meme_types'])
-
-        #     self.get_ngrams_classifier (self.ngrams_train_data, filenames['ngrams_classifier'])
-
-
-
-        # print "Geting vocab/word frequencies... "
-        # self.load_vocab_and_word_frequencies (filenames['vocab'], filenames['word frequencies'])
-
-        # print "Getting tf.idf..."
-        # self.load_tfidf (filenames['tfidf'])
-
-        # print "Loading sentiment lexicon data..."
-        # self.sentiment_lexicon_manager = SentimentLexiconManager (filenames['sentiment'])
-
-        # print "Converting memes to labeled feature vectors... CURRENTLY TFIDF, GOTTA CHANGE THIS"
-        # self.get_labeled_data ()
-        # self.get_labeled_data_tfidf ()
-
-        # print "Partitioning data into training and test sets for cross-validation..."
-        # self.partition_data (0.85)
-        
-        #print "Loading classifier(s)..."
-        #self.load_maxent (filenames);
-
         return
 
 
@@ -188,57 +104,46 @@ class Automeme:
     ########################[ --- Loading/Saving/Initializing Memes --- ]###################################################
     ########################################################################################################################
 
-    # Function: (load|save)_meme_examples_(text|pickle)
-    # ----------------------------
-    # this function will load all examples of memes we have into objects of type 'Meme' 
-    # (see Meme.py) and store them in self.meme_examples
-    #
-    # File format:
-    # ------------
-    # meme_type | top_text | bottom_text
-    #
-    def load_meme_examples_text (self):
-    
-        self.meme_types = {}
-        self.meme_examples = []
+    # Function: load_memes_raw
+    # ------------------------
+    # this function will fill self.memes from json files, given a directory containing 
+    # all of the json files.
+    def load_memes_raw (self, json_directory):
+        
+        filenames = [os.path.join(json_directory, f) for f in os.listdir(json_directory)]
+        for f in filenames:
+            print ("    ---> Loading: " + f)
+            json_memes = json.loads (open(f, 'r').read ())
+            for json_meme in json_memes:
+
+                new_meme = Meme (json_meme['meme_type'], json_meme['top_text'], json_meme['bottom_text'])
+
+                #--- initialize meme_types to count of zero if not already so ---
+                if not json_meme['meme_type'] in self.meme_types.keys ():
+                    self.meme_types[json_meme['meme_type']] = 0
+
+                self.meme_types[json_meme['meme_type']] += 1
+
+                self.meme_examples.append (new_meme)
 
 
-        meme_filenames = [os.path.join (data_directory, filename) for filename in os.listdir(data_directory)]
-        for filename in meme_filenames:
 
-            print_inner_status ("Loading file", filename)
-            f = open(filename, 'r')
-            entries = [m for m in f.readlines () if len(m) > 3]
 
-            for entry in entries:
 
-                ### Step 1: extract the fields ###
-                fields = [s.strip() for s in entry.split("|")]                                    
-                meme_type = fields[0].lower().strip()
-                top_text_raw = fields[1].lower().strip()
-                bottom_text_raw = fields[2].lower().strip()
 
-                ### Step 2: increment the count of examples of this meme type in self.meme_types ###
-                if not meme_type in self.meme_types.keys ():
-                    self.meme_types[meme_type] = 1
-                else:
-                    self.meme_types [meme_type] += 1
 
-                ### Step 2: create the meme and add it to meme examples ###
-                new_meme = Meme (self, meme_type, top_text_raw, bottom_text_raw)
-                self.meme_examples.append (new_meme);
 
     def load_meme_examples_pickle (self):
 
-        meme_examples_filename  = os.path.join (saved_data_directory, 'meme_examples.obj')
-        meme_types_filename     = os.path.join (saved_data_directory, 'meme_types.obj')
+        meme_examples_filename  = os.path.join (self.saved_data_directory, 'meme_examples.obj')
+        meme_types_filename     = os.path.join (self.saved_data_directory, 'meme_types.obj')
         self.meme_examples      = pickle.load (open(meme_examples_filename, 'r'))
         self.meme_types         = pickle.load (open(meme_types_filename, 'r'))
 
-    def save_meme_examples (self) :
+    def save_meme_examples_pickle (self) :
 
-        meme_examples_filename  = os.path.join (saved_data_directory, 'meme_examples.obj')
-        meme_types_filename     = os.path.join (saved_data_directory, 'meme_types.obj')
+        meme_examples_filename  = os.path.join (self.saved_data_directory, 'meme_examples.obj')
+        meme_types_filename     = os.path.join (self.saved_data_directory, 'meme_types.obj')
 
         pickle.dump (self.meme_examples, open(meme_examples_filename, 'w'))
         pickle.dump (self.meme_types, open(meme_types_filename, 'w'))
@@ -979,53 +884,6 @@ class Automeme:
 
 if __name__ == "__main__":
 
-    filenames = defaultdict(lambda: None)
-
-    filenames['meme_examples'] = [
-        "../old_data/Foul-Bachelor-Frog data.txt",
-        "../old_data/Futurama-Fry data.txt",
-        "../old_data/Good-Guy-Greg- data.txt",
-        "../old_data/Insanity-Wolf data.txt",
-        "../old_data/Philosoraptor data.txt",
-        "../old_data/Scumbag-Steve data.txt",
-        "../old_data/Socially-Awkward-Penguin data.txt",
-        "../old_data/Success-Kid data.txt",
-        "../old_data/Paranoid-Parrot data.txt",
-        "../old_data/Annoying-Facebook-Girl data.txt",
-        "../old_data/First-World-Problems data.txt",
-        "../old_data/Forever-Alone data.txt",
-        "../old_data/The-Most-Interesting-Man-In-The-World data.txt"
-    ]
-
-    filenames['meme_types'] = "../data/meme_types.txt"
-    # filenames['sentiment'] = '../data/inquirerbasic.csv'
-
-
-
-    # if 'load_word_stats' in sys.argv:
-        # filenames['vocab']              = 'vocab.obj'
-        # filenames['word frequencies']   = 'word_frequencies.obj'
-        # filenames['tfidf']              = 'tfidf.obj'
-
-    # elif 'load_all' in sys.argv:
-        
-    if 'load' in sys.argv:
-        # filenames['vocab']              = 'vocab.obj'
-        # filenames['word frequencies']   = 'word_frequencies.obj'
-        # filenames['tfidf']              = 'tfidf.obj'
-
-        # filenames['all'] = 'classifier_all.obj'
-        # filenames['top'] = 'classifier_top.obj'
-        # filenames['bottom'] = 'classifier_bottom.obj'
-
-        filenames['ngrams_classifier'] = 'ngrams_classifier.obj'
-
-
-    if 'save' in sys.argv:
-        save = True
-    else:
-        save = False
-
-    automeme = Automeme (filenames, save, mode='dev_mode')
+    automeme = Automeme ()
 
         
