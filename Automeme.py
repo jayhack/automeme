@@ -170,14 +170,18 @@ class Automeme:
         memes = []
         for json_meme in json_memes:
 
-            new_meme = Meme (json_meme['meme_type'], json_meme['top_text'], json_meme['bottom_text'])
+            meme_type   = json_meme['meme_type']
+            top_text    = json_meme['meme_type'].encode ('ascii', 'ignore')
+            bottom_text = json_meme['meme_type'].encode ('ascii', 'ignore')
+
+            new_meme = Meme (meme_type, top_text, bottom_text)
 
             ### Initialize meme counts where appropriate ###
-            if not json_meme['meme_type'] in self.meme_types.keys ():
-                self.meme_types[json_meme['meme_type']] = 0
+            if not meme_type in self.meme_types.keys ():
+                self.meme_types[meme_type] = 0
 
             ### Increment counts ###
-            self.meme_types[json_meme['meme_type']] += 1
+            self.meme_types[meme_type] += 1
             memes.append (new_meme)
 
         return memes
