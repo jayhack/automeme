@@ -42,12 +42,25 @@ from common_utilities import print_message, print_status, print_inner_status, pr
 class Automeme:
     
     #---------------------[ Filenames ]------------------------------
-    raw_data_directory      = os.path.join  (os.getcwd(), 'data_diylol')
-    classifiers_directory   = os.path.join  (os.getcwd(), 'classifiers')
-    saved_data_directory    = os.path.join  (os.getcwd(), 'saved_data')
+    memes_directory             = os.path.join  (os.getcwd(), 'data/memes')             
+    classifiers_directory       = os.path.join  (os.getcwd(), 'data/classifiers')        
+    corpus_directory            = os.path.join  (os.getcwd(), 'data/corpus')             
+    examples_directory          = os.path.join  (os.getcwd(), 'data/examples')  
+
+    memes_filename              = os.path.join (memes_directory,       'memes.pkl')
+    meme_types_filename         = os.path.join (memes_directory,       'meme_types.pkl')
+    classifier_filename         = os.path.join (classifiers_directory, 'unigrams_classifier.pkl')
+    english_words_filename      = os.path.join (corpus_directory,      'english_words.pkl')
+    spanish_words_filename      = os.path.join (corpus_directory,      'spanish_words.pkl')
+    examples_filename           = os.path.join (examples_directory,    'examples.pkl')
+
+
+    #---------------------[ Corpus Data ]----------------------------
+    english_words = set()
+    spanish_words = set()
 
     #---------------------[ Meme Examples ]--------------------------
-    meme_examples       = []    # list of Meme objects representing all the examples we have access to
+    memes               = []    # list of Meme objects representing all the examples we have access to
     meme_types          = {}    # defaultdict mapping meme_type (strings) to the count of examples we have of them
 
     #---------------------[ Training Data ]--------------------------
@@ -72,28 +85,45 @@ class Automeme:
     # Initializes data structures, gets all labeled data, though does not train the classifiers.
     def __init__ (self):
        
+
+        ### Step 1: fill self.english_words ###
+        print_status ("Initialization", "Loading word corpuses")
+        self.load_words ()
+
+
+
+        ### Step 2: fill self.memes ###
         print_status ("Initialization", "Loading memes")
-        # self.load_memes_raw (self.raw_data_directory)
-        self.load_meme_examples_pickle ()
-        # self.save_meme_examples_pickle ()
+        self.get_memes ()
+        # self.load_memes ()
+        self.save_memes ()
+        self.print_memes_stats ()
 
-        print_status ("Initialization", "Getting feature represenations")
-        self.get_training_examples ()
 
-        print_status ("Initialization", "Training classifier")
-        self.train_classifier ()
+
+        ### Step 3: fill self.training_examples ###
+        print_status ("Initialization", "Getting feature represenations (examples)")
+        self.get_examples ()
+        # self.load_training_examples ()
+        self.save_examples ()
+
+
+        ### Step 4: train the classifier ###
+        # print_status ("Initialization", "Training classifier")
+        # self.train_classifier ()
         # self.load_classifier ('unigram_classifier.obj')
 
-        print_status ("Initialization", "Saving classifier")
-        self.save_classifier ('unigram_classifier.pkl')
+        ### Step 5: save the classifier ###
+        # print_status ("Initialization", "Saving classifier")
+        # self.save_classifier ('unigram_classifier.pkl')
 
         #--- Evaluation ---
-        self.classifier.show_most_informative_features (1000)
-        print "### total accuracy: ###"
-        print classify.accuracy (self.classifier, self.testing_examples)
-        MRR = self.evaluate_classifier_MRR ()
-        print "### MRR: ###"
-        print MRR
+        # self.classifier.show_most_informative_features (1000)
+        # print "### total accuracy: ###"
+        # print classify.accuracy (self.classifier, self.testing_examples)
+        # MRR = self.evaluate_classifier_MRR ()
+        # print "### MRR: ###"
+        # print MRR
 
         return
 
@@ -105,59 +135,140 @@ class Automeme:
     ########################[ --- Loading/Saving/Initializing Memes --- ]###################################################
     ########################################################################################################################
 
-    # Function: load_memes_raw
+    # Function: load_english_words
+    # ----------------------------
+    # loads all english words from the 'data' directory
+    def load_words (self):
+
+        self.english_words = pickle.load (open(self.english_words_filename, 'r'))
+        self.spanish_words = pickle.load (open(self.spanish_words_filename, 'r'))
+        self.spanish_words = self.spanish_words.difference (self.english_words)
+
+
+    # Function: get memes
     # ------------------------
-    # this function will fill self.memes from json files, given a directory containing 
-    # all of the json files.
-    def load_memes_raw (self, json_directory):
+    # loads all memes in the json_memes directory
+    def get_memes (self):
+
+        # json_filenames = [f for f in os.listdir (self.memes_directory) if f[-4:] == 'json']
+        json_filenames = ['all_memes.json']
+        for f in json_filenames:
+            print " ---> loading " + f
+            json_filename   = os.path.join (self.memes_directory, f)
+            loaded_memes    = self.load_memes_json_file (json_filename)
+            filtered_memes  = self.filter_memes (loaded_memes)
+            self.memes += filtered_memes
+            print "     after filtering: ", len(loaded_memes), " -> ", len(filtered_memes)            
+
+
+    # Function: load_memes_json_file
+    # ------------------------------
+    # loads all memes contained in a single json file, returns in a list
+    def load_memes_json_file (self, json_filename):
         
-        filenames = [os.path.join(json_directory, f) for f in os.listdir(json_directory)]
-        for f in filenames:
-            print ("    ---> Loading: " + f)
-            json_memes = json.loads (open(f, 'r').read ())
-            for json_meme in json_memes:
+        json_memes = json.loads (open(json_filename, 'r').read ())
+        memes = []
+        for json_meme in json_memes:
 
-                new_meme = Meme (json_meme['meme_type'], json_meme['top_text'], json_meme['bottom_text'])
+            new_meme = Meme (json_meme['meme_type'], json_meme['top_text'], json_meme['bottom_text'])
 
-                #--- initialize meme_types to count of zero if not already so ---
-                if not json_meme['meme_type'] in self.meme_types.keys ():
-                    self.meme_types[json_meme['meme_type']] = 0
+            ### Initialize meme counts where appropriate ###
+            if not json_meme['meme_type'] in self.meme_types.keys ():
+                self.meme_types[json_meme['meme_type']] = 0
 
-                self.meme_types[json_meme['meme_type']] += 1
+            ### Increment counts ###
+            self.meme_types[json_meme['meme_type']] += 1
+            memes.append (new_meme)
 
-                self.meme_examples.append (new_meme)
+        return memes
 
+
+    # Function: filter_memes
+    # ----------------------
+    # apply certain filtering operations to memes, like removing short ones
+    # Note: you should extend this by making a language-modeling classifier like 
+    # naive bayes that will determine what language is being spoken
+    def filter_memes (self, memes):
+
+        remove_indeces = []
+        for index, meme in enumerate(memes):
+
+            top_length = len([w for w in meme.top_text if w.isalpha ()])
+            bottom_length = len([w for w in meme.bottom_text if w.isalpha()])
+
+            top_english_words       = [w for w in meme.top_text if w in self.english_words]
+            bottom_english_words    = [w for w in meme.bottom_text if w in self.english_words]
+            top_spanish_words       = [w for w in meme.top_text if w in self.spanish_words]
+            bottom_spanish_words    = [w for w in meme.bottom_text if w in self.spanish_words]
+
+            num_words         = top_length + bottom_length
+            num_english_words = len(top_english_words) + len(bottom_english_words)
+            num_spanish_words = len(top_spanish_words) + len(bottom_spanish_words)
+
+
+            print meme 
+
+            ### Step 1: remove if too few total words ###
+            if not num_words >= 4:
+                # print " --- REMOVED (too few words) ---"
+                remove_indeces.append (index)
+                continue
+
+            ### Step 2: compute relative percentages of english and spanish words ###
+            english_percentage      = float(num_english_words) / float(num_words)            
+            spanish_percentage      = float(num_spanish_words) / float(num_words)
+            spanish_english_ratio = None
+            if num_english_words > 0:
+               spanish_english_ratio = float(num_spanish_words) / float(num_english_words)
+
+
+            ### DEBUG: determine what the right ratios are... ###
+            # print " total english words | percentage: ", num_english_words, " | ", english_percentage
+            # print " total spanish words | percentage: ", num_spanish_words, " | ", spanish_percentage
+            # print " spanish words: ", (top_spanish_words+ bottom_spanish_words)
+            # print " spanish_english ratio: ", spanish_english_ratio
+
+            if english_percentage < 0.4:
+                remove_indeces.append (index)
+                continue
+
+            if spanish_english_ratio > 0.4:
+                # print " --- REMOVED (too much spanish) ---"
+                remove_indeces.append (index)
+                continue
+
+
+
+        memes = [x for index, x in enumerate(memes) if not index in remove_indeces]
+        for meme in memes:
+            print meme
+        return memes
+
+        # - only use high-tfidf words?
 
 
     # Function: load_meme_examples_pickle
     # -----------------------------------
     # loads meme examples from pickled files in the saved_data_directory
-    def load_meme_examples_pickle (self):
+    def load_memes (self):
 
-        meme_examples_filename  = os.path.join (self.saved_data_directory, 'meme_examples.obj')
-        meme_types_filename     = os.path.join (self.saved_data_directory, 'meme_types.obj')
-        self.meme_examples      = pickle.load (open(meme_examples_filename, 'r'))
-        self.meme_types         = pickle.load (open(meme_types_filename, 'r'))
-
+        self.memes      = pickle.load (open(self.memes_filename, 'r'))
+        self.meme_types = pickle.load (open(self.meme_types_filename, 'r'))
 
 
     # Function: save_meme_examples_pickle
     # -----------------------------------
-    # pickles self.meme_examples in the saved_data_directory
-    def save_meme_examples_pickle (self) :
+    # pickles self.memes in the saved_data_directory
+    def save_memes (self) :
 
-        meme_examples_filename  = os.path.join (self.saved_data_directory, 'meme_examples.obj')
-        meme_types_filename     = os.path.join (self.saved_data_directory, 'meme_types.obj')
-
-        pickle.dump (self.meme_examples, open(meme_examples_filename, 'w'))
-        pickle.dump (self.meme_types, open(meme_types_filename, 'w'))
+        pickle.dump (self.memes,      open(self.memes_filename, 'w'))
+        pickle.dump (self.meme_types, open(self.meme_types_filename, 'w'))
 
 
-
-    # Function: print_meme_examples_stats
+    # Function: print_memes_stats
     # -----------------------------------
     # prints out statistics on the loaded meme examples
-    def print_meme_examples_stats (self):
+    def print_memes_stats (self):
 
         print_message ("Meme Example Stats:")
         for meme_type, count in self.meme_types.items ():
@@ -173,15 +284,15 @@ class Automeme:
     ###############################[ --- Training/Loading/Saving the Classifier --- ]#######################################
     ########################################################################################################################
 
-    # Function: get_training_data
+    # Function: get_examples
     # ---------------------------
     # fills self.all_examples, self.training_examples and self.testing_examples with 
     # feature vector representations of all the memes we have access to
-    def get_training_examples (self):
+    def get_examples (self):
 
         ### Step 1: fill all_examples with feature representations of all memes ###
         self.all_examples = []
-        for meme_example in self.meme_examples:
+        for meme_example in self.memes:
             self.all_examples.append ((meme_example.get_features(), meme_example.meme_type))
 
         ### Step 2: shuffle it up ###
@@ -192,6 +303,12 @@ class Automeme:
         num_training_examples = int(train_portion*len(self.all_examples))
         self.training_examples = self.all_examples [:num_training_examples]
         self.testing_examples = self.all_examples[num_training_examples:]
+
+
+    def save_examples (self):
+
+        pickle.dump (self.all_examples, open(self.examples_filename, 'w'))
+
 
 
 
@@ -747,7 +864,7 @@ class Automeme:
 
         self.ngrams_labeled_data = []
 
-        for meme_example in self.meme_examples:
+        for meme_example in self.memes:
             labeled_data = (meme_example.ngram_features, meme_example.meme_type);
             self.ngrams_labeled_data.append (labeled_data)
 
