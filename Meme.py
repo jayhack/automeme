@@ -16,6 +16,16 @@ import sys
 import csv
 import pickle
 
+# Function: convert_to_feature_vector
+# -----------------------------------
+# dictionary representation of a meme -> feature vector
+def convert_to_feature_vector (dict_rep):
+
+	print dict_rep['top_text']
+	print 
+	meme_rep = Meme (dict_rep['meme_type'], dict_rep['top_text'], dict_rep['bottom_text'])
+	return meme_rep.get_features ()
+
 
 class Meme:
 
