@@ -15,6 +15,7 @@ import sys
 import json
 import pickle
 from collections import defaultdict
+from collections import Counter
 from random import shuffle
 import operator
 import math
@@ -24,8 +25,9 @@ from nltk.tokenize import word_tokenize, wordpunct_tokenize, sent_tokenize
 from nltk import ngrams
 from nltk import classify
 
-#--- Langid ---
-# import langid
+#--- SKLearn ---
+from sklearn.feature_extraction import DictVectorizer
+from sklearn.feature_extraction.text import TfidfTransformer
 
 #--- Pandas ---
 import pandas as pd
@@ -62,7 +64,7 @@ class Automeme:
 
 
     #---------------------[ Pandas Dataframes ]----------------------------
-    memes_dataframe = None
+    meme_dataframe = None
 
     #---------------------[ Corpus Data ]----------------------------
     english_words = set()
@@ -114,26 +116,11 @@ class Automeme:
     # Initializes data structures, gets all labeled data, though does not train the classifiers.
     def __init__ (self, mode="train"):
 
-        # if mode == 'preprocess':
-        #     self.init_preprocess ()
-        # elif mode == 'train':
-        #     self.init_train ()
-        # elif mode == 'predict':
-        #     self.init_predict ()
-        # else:
 
-        ### Step 1: fill self.english_words ###
-        # print_status ("Initialization", "Loading word corpuses")
-        # self.load_words ()
-
-
-        ### Step 2: fill self.memes ###
+        ### Step 2: get memes dataframe ###
         print_status ("Initialization", "Loading memes")
         self.load_memes_pandas ()
-        # self.get_memes ()         # read in memes from json files
-        # self.load_memes ()          # read in memes from pkl files
-        # self.save_memes ()        # save memes to pkl files
-        # self.print_memes_stats ()   # print out stats on memes
+        self.print_memes_stats ()   
 
 
 
@@ -171,9 +158,9 @@ class Automeme:
     ########################[ --- Loading/Saving/Initializing Memes --- ]###################################################
     ########################################################################################################################
 
-    # Function: load_memes_pandas
-    # ---------------------------
-    # loads all memes into self.memes_dataframe
+    # Function: load_memes
+    # --------------------
+    # loads all memes into self.meme_dataframe
     def load_memes_pandas (self):
 
         ### Step 1: get the names of all meme json files ###
@@ -185,6 +172,13 @@ class Automeme:
         ### Step 3: concatenate all of them together ###
         self.meme_dataframe = pd.concat (meme_dataframes)
 
+    # Function: print_memes_stats
+    # ---------------------------
+    # prints out statistics on the loaded meme examples
+    def print_memes_stats (self):
+
+        print_message ("Meme Example Stats:")
+        self.meme_dataframe.describe()
 
 
     # Function: load_english_words
@@ -257,17 +251,57 @@ class Automeme:
             print_status ("Saved meme_type", meme_type + " (at " + pickle_filename)    
 
 
-    # Function: print_memes_stats
-    # -----------------------------------
-    # prints out statistics on the loaded meme examples
-    def print_memes_stats (self):
 
-        print_message ("Meme Example Stats:")
-        for meme_type, count in self.meme_types.items ():
-            print " ", meme_type, ": ", count
-        print "\n"
+    ########################################################################################################################
+    ###############################[ --- Preprocessing/Feature Extraction --- ]#############################################
+    ########################################################################################################################
+
+    # Function: tokenize_memes
+    # ------------------------
+    # modifies each entry in meme_dataframe s.t. it contains 
+    # a tokenized version of the meme.
+    def tokenize_memes (self):
+
+        def tokenize_meme (meme_series):
+            meme_series.loc['top_text'] = wordpunct_tokenize(meme_series.loc['top_text'])
+            meme_series.loc['bottom_text'] = wordpunct_tokenize(meme_series.loc['bottom_text'])
+
+        self.meme_dataframe.apply (tokenize_meme, axis=1)
 
 
+    # Function: bag_of_words_rep
+    # --------------------------
+    # modifies each entry in meme_dataframe s.t. it contains a counter of tokens
+    # and their occurences
+    # Note: has to operate post-tokenization
+    def get_bag_of_words_rep (self):
+
+        def bag_of_words_meme (meme_series):
+            meme_series.loc['top_text']     = Counter (meme_series.loc['top_text'])
+            meme_series.loc['bottom_text']  = Counter (meme_series.loc['bottom_text']) 
+
+        self.meme_dataframe.apply (bag_of_words_meme, axis=1)
+
+
+    # Function: get_vocab_mats
+    # ------------------------
+    # creates a scipy sparse matrices representing the bow for all memes,
+    # stores it in self.vocab_mat
+    def get_vocab_mat (self):
+
+        dv = DictVectorizer ()       
+        self.top_vocab_mat = dv.fit_transform(self.meme_dataframe['top_text'])
+        self.bottom_vocab_mat = dv.fit_transform(self.meme_dataframe['bottom_text'])
+
+
+    # Function: get_tfidf_mats
+    # ------------------------
+    # goes from vocab mats to tfidf mats
+    def get_tfidf_mats (self):
+
+        tt = TfidfTransformer ()
+        self.top_tfidf_mat      = tt.fit_transform (self.top_vocab_mat)
+        self.bottom_tfidf_mat   = tt.fit_transform (self.bottom_vocab_mat)
 
 
 

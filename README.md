@@ -27,6 +27,25 @@ in data:
 memes
 • data/
 
+2.1: Time Performance
+---------------------
+(all of this on MBPro)
+
+• Pandas load: takes < 5 seconds
+
+• Tokenizer: takes < 20 seconds
+
+• BOW representation: takes < 10 seconds
+
+• BOW -> vocab mat: < 15 seconds
+
+• sklearn Logistic Regression fit(X, y): about 4 mins!
+
+2.2: Classification Performance
+-------------------------------
+
+• Not too great right now... need better data
+
 2: Setup
 ========
 
