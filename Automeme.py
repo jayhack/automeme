@@ -2,8 +2,8 @@
 # ---------------------------------------------------------- #
 # Class: Automeme.py
 # -----------------
-# contains everything pertaining to the classification of memes
-# includes loading, training, classifying, etc
+# produces a discriminative classifier for putting documents
+# into classes defined by memes
 #
 #
 #
@@ -19,20 +19,25 @@ from random import shuffle
 import operator
 import math
 
-
 #--- NLTK ---
 from nltk.tokenize import word_tokenize, wordpunct_tokenize, sent_tokenize
 from nltk import ngrams
 from nltk import classify
 
+#--- Langid ---
+# import langid
+
+#--- Pandas ---
+import pandas as pd
+
+#--- argparse ---
+import argparse
+
 #--- My files ---
 from Meme import Meme 
 from Meme import convert_to_feature_vector
+# import Preprocess
 from common_utilities import print_message, print_status, print_inner_status, print_error
-
-
-#--- Globals ---
-
 
 
 
@@ -55,6 +60,9 @@ class Automeme:
     spanish_words_filename      = os.path.join (corpus_directory,      'spanish_words.pkl')
     examples_filename           = os.path.join (examples_directory,    'examples.pkl')
 
+
+    #---------------------[ Pandas Dataframes ]----------------------------
+    memes_dataframe = None
 
     #---------------------[ Corpus Data ]----------------------------
     english_words = set()
@@ -82,19 +90,46 @@ class Automeme:
     #########################[--- Constructor/Initialization ---]###########################################################
     ########################################################################################################################
 
+    # Function: init_preprocess
+    # -------------------------
+    # initializes automeme for preprocessing
+    def init_preprocess (self):
+        
+        print_message("Entering preprocessing mode")
+
+        ### Step 1: load in all memes ###
+        print_status ("Initialization", "Loading Meme Objects (i.e. json or pickle, not feature representations yet)") 
+        # self.get_memes ()             # from json
+        self.load_memes ()              # from pkl
+        self.print_memes_stats ()
+
+        ### Step 2: filter them ###
+        Preprocess.filter_memes (self.memes)
+
+
+
+
     # Function: constructor
     # ---------------------
     # Initializes data structures, gets all labeled data, though does not train the classifiers.
-    def __init__ (self):
-       
+    def __init__ (self, mode="train"):
+
+        # if mode == 'preprocess':
+        #     self.init_preprocess ()
+        # elif mode == 'train':
+        #     self.init_train ()
+        # elif mode == 'predict':
+        #     self.init_predict ()
+        # else:
 
         ### Step 1: fill self.english_words ###
-        print_status ("Initialization", "Loading word corpuses")
+        # print_status ("Initialization", "Loading word corpuses")
         # self.load_words ()
 
 
         ### Step 2: fill self.memes ###
         print_status ("Initialization", "Loading memes")
+        self.load_memes_pandas ()
         # self.get_memes ()         # read in memes from json files
         # self.load_memes ()          # read in memes from pkl files
         # self.save_memes ()        # save memes to pkl files
@@ -105,18 +140,18 @@ class Automeme:
         ### Step 3: fill self.training_examples ###
         print_status ("Initialization", "Getting feature represenations (examples)")
         # self.get_examples ()       # convert memes -> feature vectors
-        self.load_examples ()        # get all feature vectors (examples) 
+        # self.load_examples ()        # get all feature vectors (examples) 
         # self.save_examples ()      # save feature vectors in pkl files
 
 
         ### Step 4: train the classifier ###
         print_status ("Initialization", "Training classifier")
-        self.train_classifier ()    #train it
+        # self.train_classifier ()    #train it
         # self.load_classifier ('unigram_classifier.obj') #load it
 
         ### Step 5: save the classifier ###
         print_status ("Initialization", "Saving classifier")
-        self.save_classifier ('unigram_classifier.pkl')
+        # self.save_classifier ('unigram_classifier.pkl')
 
         #--- Evaluation ---
         # self.classifier.show_most_informative_features (1000)
@@ -126,7 +161,7 @@ class Automeme:
         # print "### MRR: ###"
         # print MRR
 
-        return
+        # return
 
 
 
@@ -135,6 +170,22 @@ class Automeme:
     ########################################################################################################################
     ########################[ --- Loading/Saving/Initializing Memes --- ]###################################################
     ########################################################################################################################
+
+    # Function: load_memes_pandas
+    # ---------------------------
+    # loads all memes into self.memes_dataframe
+    def load_memes_pandas (self):
+
+        ### Step 1: get the names of all meme json files ###
+        json_filenames = [os.path.join(self.memes_directory, f) for f in os.listdir (self.memes_directory) if f[-4:] == 'json']
+
+        ### Step 2: get individual dataframes ###
+        meme_dataframes = [pd.io.json.read_json(open(json_filename, 'r')) for json_filename in json_filenames]
+
+        ### Step 3: concatenate all of them together ###
+        self.meme_dataframe = pd.concat (meme_dataframes)
+
+
 
     # Function: load_english_words
     # ----------------------------
@@ -148,7 +199,7 @@ class Automeme:
 
     # Function: get memes
     # ------------------------
-    # loads all memes in the json_memes directory
+    # loads all meme objects (not feature vectors) in data/memes of .json format
     def get_memes (self):
 
         json_filenames = [f for f in os.listdir (self.memes_directory) if f[-4:] == 'json']
@@ -170,70 +221,6 @@ class Automeme:
             print "     after filtering: ", len(loaded_memes), " -> ", len(filtered_memes)            
 
 
-    # Function: filter_memes
-    # ----------------------
-    # apply certain filtering operations to memes, like removing short ones
-    # Note: you should extend this by making a language-modeling classifier like 
-    # naive bayes that will determine what language is being spoken
-    def filter_memes (self, memes):
-
-        remove_indeces = []
-        for index, meme in enumerate(memes):
-
-            top_length = len([w for w in meme.top_text if w.isalpha ()])
-            bottom_length = len([w for w in meme.bottom_text if w.isalpha()])
-
-            top_english_words       = [w for w in meme.top_text if w in self.english_words]
-            bottom_english_words    = [w for w in meme.bottom_text if w in self.english_words]
-            top_spanish_words       = [w for w in meme.top_text if w in self.spanish_words]
-            bottom_spanish_words    = [w for w in meme.bottom_text if w in self.spanish_words]
-
-            num_words         = top_length + bottom_length
-            num_english_words = len(top_english_words) + len(bottom_english_words)
-            num_spanish_words = len(top_spanish_words) + len(bottom_spanish_words)
-
-
-            # print meme 
-
-            ### Step 1: remove if too few total words ###
-            if not num_words >= 4:
-                # print " --- REMOVED (too few words) ---"
-                remove_indeces.append (index)
-                continue
-
-            ### Step 2: compute relative percentages of english and spanish words ###
-            english_percentage      = float(num_english_words) / float(num_words)            
-            spanish_percentage      = float(num_spanish_words) / float(num_words)
-            spanish_english_ratio = None
-            if num_english_words > 0:
-               spanish_english_ratio = float(num_spanish_words) / float(num_english_words)
-
-
-            ### DEBUG: determine what the right ratios are... ###
-            # print " total english words | percentage: ", num_english_words, " | ", english_percentage
-            # print " total spanish words | percentage: ", num_spanish_words, " | ", spanish_percentage
-            # print " spanish words: ", (top_spanish_words+ bottom_spanish_words)
-            # print " spanish_english ratio: ", spanish_english_ratio
-
-            if english_percentage < 0.4:
-                remove_indeces.append (index)
-                continue
-
-            if spanish_english_ratio > 0.4:
-                # print " --- REMOVED (too much spanish) ---"
-                remove_indeces.append (index)
-                continue
-
-
-
-        memes = [x for index, x in enumerate(memes) if not index in remove_indeces]
-        for meme in memes:
-            print meme
-        return memes
-
-        # - only use high-tfidf words?
-
-
     # Function: get_meme_pickle_filename 
     # ----------------------------------
     # meme_type -> pickle filename
@@ -244,7 +231,7 @@ class Automeme:
 
     # Function: load_meme_examples_pickle
     # -----------------------------------
-    # loads meme examples from pickled files in the saved_data_directory
+    # loads all meme objects (not feature vectors) in data/memes of .json format    
     def load_memes (self):
 
         print_status ("Loading memes", "Begin")
@@ -1074,6 +1061,11 @@ class Automeme:
 
 
 if __name__ == "__main__":
+
+    # parser = argparse.ArgumentParser (description='determines mode')
+    # parser.add_argument ('--mode', metavar='M', type=str, nargs='+', help='determines the mode')
+    # args = parser.parse_args ()
+
 
     automeme = Automeme ()
 

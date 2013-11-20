@@ -95,7 +95,7 @@ class Meme:
 			for word in s:
 				self.bottom_text.append(word)
 
-		self.all_text = self.top_text + self.bottom_text
+		self.all_text = ' '.join(self.top_text + self.bottom_text)
 
 
 
