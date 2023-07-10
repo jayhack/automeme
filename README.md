@@ -7,7 +7,6 @@ classes defined by 'Memes' (AdviceAnimals)
 
 by Jay Hack & Sam Beder, Fall 2013
 
-
 -----------------------------------------------------
 
 1: Description
