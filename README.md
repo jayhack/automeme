@@ -5,7 +5,7 @@ Automeme
 Language modeling and classification for document 
 classes defined by 'Memes' (AdviceAnimals)
 
-by Jay Hack, Fall 2013
+by Jay Hack & Sam Beder, Fall 2013
 
 -----------------------------------------------------
 
